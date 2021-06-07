@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import base
 from django.utils.translation import ugettext_lazy as _
 
 def pokemon_upload_dir(instance, filename):
