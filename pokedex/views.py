@@ -31,10 +31,10 @@ class Custom_Pagination(object):
         page_range = paginator.page_range[start_index:end_index]
         return page_range
 
+
 class PokedexListView(ListView):
     model = models.Pokemon
     template_name = 'pages/pokemon_list.html'
-    context_object_name = 'data'
     paginate_by = 20
     
     def get_context_data(self, **kwargs):
@@ -42,7 +42,19 @@ class PokedexListView(ListView):
         context_data['page_range'] = Custom_Pagination(self.get_queryset(), self.paginate_by, self.request.GET.get('page',1)).pagination()
         return context_data
 
+
 class PokedexDetailView(DetailView):
     model = models.Pokemon
     template_name = 'pages/pokemon_detail.html'
-    context_object_name = 'data'
+    
+    def get(self, request, *args, **kwargs):
+        data = get_object_or_404(models.Pokemon, pk=kwargs['pk'])
+        if data:
+            type = models.PokemonTypeSlot.objects.filter(pokemon=data.id)
+            ability = models.PokemonAbilitySlot.objects.filter(pokemon=data.id)
+            context = { 
+                    'data': data,
+                    'type': type,
+                    'ability': ability
+                }
+        return render(request, self.template_name, context)

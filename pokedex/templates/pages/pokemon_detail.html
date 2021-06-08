@@ -1,0 +1,81 @@
+{% extends "index.html" %}
+
+{% block page_content %}
+    <div class="row mt-5 justify-content-center">
+      <div class="card mb-3 " style="width: 70%">
+        <img class="card-img-top" src="{{data.image}}" alt="Card image cap">
+        <div class="card-body">
+          <h3 class="card-title">{{data.name}}</h3>
+          <hr/>
+          <div class="card-text">
+            <b> Type : </b>
+            {% for d in type %}
+              {{d.type.name}}
+            {% endfor %}
+          </div>
+          <hr/>
+          <div class="card-text">
+            <b> Ability : </b> <br/>
+            {% for d in ability %}
+              <li>
+                <b>{{d.ability.name}}</b><br/>
+                <small>Short Effect : <i>{{d.ability.short_effect}} </i></small><br/>
+                <small>Effect : <i>{{d.ability.effect}} </i></small><br/>
+              </li>
+            {% endfor %}
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="card-text col-6 justify-content-start">
+              <b> Order : </b> &nbsp;{{data.order}}
+            </div>
+            <div class="card-text col-6  justify-content-end">
+              <b> Exp. : </b> &nbsp;{{data.base_experience}}
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="card-text col-6 justify-content-start">
+              <b> Height : </b> &nbsp;{{data.height}}
+            </div>
+            <div class="card-text col-6 justify-content-end">
+              <b> Weight : </b> &nbsp;{{data.weight}}
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="card-text col-6 justify-content-start">
+              <b> HP : </b> &nbsp;{{data.hp}}
+            </div>
+            <div class="card-text col-6 justify-content-end">
+              <b> Speed : </b> &nbsp;{{data.speed}}
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="card-text col-6 justify-content-start">
+              <b> Attack: </b> &nbsp;{{data.attack}}
+            </div>
+            <div class="card-text col-6 justify-content-end">
+              <b> Defense : </b> &nbsp;{{data.defense}}
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="card-text col-6 justify-content-start">
+              <b> Special Attack : </b> &nbsp;{{data.special_attack}}
+            </div>
+            <div class="card-text col-6 justify-content-end">
+              <b> Special Defense : </b> &nbsp;{{data.special_defense}}
+            </div>
+          </div>
+          <hr/>
+          <a href="/" class="btn btn-primary mt-2 px-4 float-right">Back</a>
+        </div>
+      </div>
+    </div>
+    
+    {% if is_paginated %}
+        {% include "common/pagination.html" %}
+    {% endif %}
+{% endblock %}
