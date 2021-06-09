@@ -6,9 +6,9 @@
         <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card bg-light mb-3" style="width: 100%;">
                 <img
-                    src="{{ d.image }}"
+                    src={% if d.image %} {{d.image.url}} {%endif%}
                     class="card-img-top"
-                    alt="..."
+                    style="height: 15rem;"
                 />
                 <div class="card-body">
                     <small><i>#{{ d.id }}</i></small>
