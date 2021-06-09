@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.shortcuts import render,redirect, get_object_or_404
 from . import models, forms
+from django.contrib import messages 
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView,   UpdateView, DeleteView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -57,4 +57,75 @@ class PokedexDetailView(DetailView):
                     'type': type,
                     'ability': ability
                 }
+        print(context, data.id)
         return render(request, self.template_name, context)
+
+
+class PokedexCreateView(CreateView):
+    model = models.Pokemon
+    form_class= forms.PokedexForm
+    template_name = 'pages/pokemon_create.html'
+    success_url = '/'
+    
+    def post(self, request, *args, **kwargs):
+        super(PokedexCreateView, self).post(request)
+        form = forms.PokedexForm(request.POST)
+        try:
+            if form.is_valid:
+                pokemon = models.Pokemon.objects.get(id=self.object.id)
+                type_slot = request.POST['type_slot'].split(",")
+                ability_slot = request.POST['ability_slot'].split(",")
+                for type in request.POST.getlist('type'):
+                    pokemontype = models.PokemonType.objects.get(id=type)
+                    pokemontypeslot, created = models.PokemonTypeSlot.objects.get_or_create(type = pokemontype, pokemon=pokemon,
+                                                                                    slot = type_slot[request.POST.getlist('type').index(type)])
+
+                for ability in request.POST.getlist('ability'):
+                    pokemonability = models.PokemonAbility.objects.get(id=ability)
+                    pokemonabilityslot, created = models.PokemonAbilitySlot.objects.get_or_create(ability = pokemonability, pokemon=pokemon,
+                                                                                        slot = ability_slot[request.POST.getlist('ability').index(ability)])
+            else:
+                messages.error(request, "Error")
+        except Exception as e: 
+            print(e)
+        
+        return redirect(self.success_url)
+
+
+class PokedexUpdateView(UpdateView):
+    model = models.Pokemon
+    form_class = forms.PokedexForm
+    template_name= 'pages/pokemon_update.html'
+    success_url = '/'
+
+    def post(self, request, pk, *args, **kwargs):
+        super(PokedexUpdateView, self).post(request)
+        try:
+            pokemon = models.Pokemon.objects.get(id=pk)
+            pokemontypeslot= models.PokemonTypeSlot.objects.filter(pokemon=pokemon).delete()
+            pokemonabilityslot= models.PokemonAbilitySlot.objects.filter(pokemon=pokemon).delete()
+            type_slot = request.POST['type_slot'].split(",")
+            ability_slot = request.POST['ability_slot'].split(",")
+            for type in request.POST.getlist('type'):
+                pokemontype = models.PokemonType.objects.get(id=type)
+                pokemontypeslot.create(pokemon=pokemon,type=pokemontype,slot=type_slot[request.POST.getlist('type').index(type)])
+            for ability in request.POST.getlist('ability'):
+                pokemonability = models.PokemonAbility.objects.get(id=type)
+                pokemonabilityslot.create(pokemon=pokemon,ability=pokemonability,slot=ability_slot[request.POST.getlist('ability').index(ability)])
+           
+        except Exception as e: 
+            print(e)
+
+        return redirect(self.success_url)
+
+
+class PokedexDeleteView(DeleteView):
+    template_name = 'pages/pokemon_delete.html'
+    success_url = '/'
+
+    def get_object(self, *args, **kwargs):
+        try:
+            pokemon = models.Pokemon.objects.get(id=self.kwargs['pk'])
+            pokemon.delete()
+        except Exception as e: 
+            print(e)

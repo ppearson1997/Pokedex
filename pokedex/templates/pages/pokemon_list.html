@@ -5,15 +5,15 @@
     {% for d in object_list %}
         <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card bg-light mb-3" style="width: 100%;">
-                <img
-                    src="{{ d.image }}"
-                    class="card-img-top"
-                    alt="..."
+                <img class="card-img-top" style="min-height: 10rem;"
+                    src={% if d.image %} {{d.image.url}} {%endif%} 
                 />
                 <div class="card-body">
-                    <small><i>#{{ d.id }}</i></small>
+                    <small><i>#{{ d.order }}</i></small>
                     <h5 class="card-title">{{ d.name }}</h5>
-                    <a href="/pokemon-detail/{{d.id}}" class="btn btn-primary mt-2 px-4">View Detail</a>
+                    <a href="/pokemon-detail/{{d.id}}" class="btn btn-info">View</a>
+                    <a href="/pokemon-update/{{d.id}}" class="btn btn-primary">Edit</a>
+                    <a href="/pokemon-delete/{{d.id}}" class="btn btn-danger">Delete</a>
                 </div>
             </div>
         </div>
