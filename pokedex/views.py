@@ -1,10 +1,10 @@
-from django.db.models.fields.related_descriptors import create_forward_many_to_many_manager
 from django.shortcuts import render,redirect, get_object_or_404
 from . import models, forms
 from django.contrib import messages 
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView,   UpdateView, DeleteView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import HttpResponseRedirect
 
 
 class Custom_Pagination(object):
@@ -88,4 +88,31 @@ class PokedexCreateView(CreateView):
         except Exception as e: 
             print(e)
         
+        return redirect(self.success_url)
+
+
+class PokedexUpdateView(UpdateView):
+    model = models.Pokemon
+    form_class = forms.PokedexForm
+    template_name= 'pages/pokemon_update.html'
+    success_url = '/'
+
+    def post(self, request, pk, *args, **kwargs):
+        super(PokedexUpdateView, self).post(request)
+        try:
+            pokemon = models.Pokemon.objects.get(id=pk)
+            pokemontypeslot= models.PokemonTypeSlot.objects.filter(pokemon=pokemon).delete()
+            pokemonabilityslot= models.PokemonAbilitySlot.objects.filter(pokemon=pokemon).delete()
+            type_slot = request.POST['type_slot'].split(",")
+            ability_slot = request.POST['ability_slot'].split(",")
+            for type in request.POST.getlist('type'):
+                pokemontype = models.PokemonType.objects.get(id=type)
+                pokemontypeslot.create(pokemon=pokemon,type=pokemontype,slot=type_slot[request.POST.getlist('type').index(type)])
+            for ability in request.POST.getlist('ability'):
+                pokemonability = models.PokemonAbility.objects.get(id=type)
+                pokemonabilityslot.create(pokemon=pokemon,ability=pokemonability,slot=ability_slot[request.POST.getlist('ability').index(ability)])
+           
+        except Exception as e: 
+            print(e)
+
         return redirect(self.success_url)
