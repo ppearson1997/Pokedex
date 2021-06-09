@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView,   UpdateView, DeleteView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect
 
 
 class Custom_Pagination(object):
@@ -63,12 +62,14 @@ class PokedexDetailView(DetailView):
 
 
 class PokedexCreateView(CreateView):
+    model = models.Pokemon
     form_class= forms.PokedexForm
     template_name = 'pages/pokemon_create.html'
     success_url = '/'
     
-    def post(self, request, form):
+    def post(self, request, *args, **kwargs):
         super(PokedexCreateView, self).post(request)
+        form = forms.PokedexForm(request.POST)
         try:
             if form.is_valid:
                 pokemon = models.Pokemon.objects.get(id=self.object.id)
@@ -116,3 +117,15 @@ class PokedexUpdateView(UpdateView):
             print(e)
 
         return redirect(self.success_url)
+
+
+class PokedexDeleteView(DeleteView):
+    template_name = 'pages/pokemon_delete.html'
+    success_url = '/'
+
+    def get_object(self, *args, **kwargs):
+        try:
+            pokemon = models.Pokemon.objects.get(id=self.kwargs['pk'])
+            pokemon.delete()
+        except Exception as e: 
+            print(e)
