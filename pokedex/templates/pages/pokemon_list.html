@@ -5,10 +5,8 @@
     {% for d in object_list %}
         <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card bg-light mb-3" style="width: 100%;">
-                <img
-                    src={% if d.image %} {{d.image.url}} {%endif%}
-                    class="card-img-top"
-                    style="height: 15rem;"
+                <img class="card-img-top" style="min-height: 10rem;"
+                    src={% if d.image %} {{d.image.url}} {%endif%} 
                 />
                 <div class="card-body">
                     <small><i>#{{ d.order }}</i></small>
