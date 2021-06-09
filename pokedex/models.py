@@ -35,7 +35,7 @@ class PokemonType(models.Model):
     class Meta:
         verbose_name = "Pokemon Type"
         verbose_name_plural = "Pokemon Types"
-        ordering = ['id']
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -66,7 +66,7 @@ class PokemonAbility(models.Model):
     class Meta:
         verbose_name = "Ability"
         verbose_name_plural = "Abilities"
-        ordering = ['id']
+        ordering = ['name']
 
 
 class PokemonAbilitySlot(models.Model):

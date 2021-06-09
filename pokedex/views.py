@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.db.models.fields.related_descriptors import create_forward_many_to_many_manager
+from django.shortcuts import render,redirect, get_object_or_404
+from django.urls import reverse_lazy
 from . import models, forms
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView,   UpdateView, DeleteView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
+import pokedex
 
 
 class Custom_Pagination(object):
@@ -57,4 +60,32 @@ class PokedexDetailView(DetailView):
                     'type': type,
                     'ability': ability
                 }
+        print(context, data.id)
         return render(request, self.template_name, context)
+
+
+class PokedexCreateView(CreateView):
+    form_class= forms.PokedexForm
+    template_name = 'pages/pokemon_create.html'
+    success_url = '/'
+    
+    def post(self, request):
+        super(PokedexCreateView, self).post(request)
+        try:
+            pokemon = models.Pokemon.objects.get(id=self.object.id)
+            type_slot = request.POST['type_slot'].split(",")
+            ability_slot = request.POST['ability_slot'].split(",")
+            for type in request.POST.getlist('type'):
+                pokemontype = models.PokemonType.objects.get(id=type)
+                pokemontypeslot, created = models.PokemonTypeSlot.objects.get_or_create(type = pokemontype, pokemon=pokemon,
+                                                                                slot = type_slot[request.POST.getlist('type').index(type)])
+
+            for ability in request.POST.getlist('ability'):
+                pokemonability = models.PokemonAbility.objects.get(id=ability)
+                pokemonabilityslot, created = models.PokemonAbilitySlot.objects.get_or_create(ability = pokemonability, pokemon=pokemon,
+                                                                                slot = ability_slot[request.POST.getlist('ability').index(ability)])
+            
+        except Exception as e: 
+            print(e)
+        
+        return redirect(self.success_url)
